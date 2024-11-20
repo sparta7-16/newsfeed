@@ -2,7 +2,6 @@ package com.example.newsfeed.entity;
 
 import com.example.newsfeed.dto.user.SignupUserRequestDto;
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -10,8 +9,7 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
-@Getter
-public class User extends BaseEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
@@ -24,11 +22,5 @@ public class User extends BaseEntity {
         this.username=signupUserRequestDto.getUsername();
         this.email=signupUserRequestDto.getEmail();
         this.password=signupUserRequestDto.getPassword();
-    }
-
-    public void updateUser(String username) {
-
-        this.username = username;
-
     }
 }
