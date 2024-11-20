@@ -1,9 +1,13 @@
 package com.example.newsfeed.service;
 
+import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.user.ReadUserResponseDto;
 import com.example.newsfeed.dto.user.SignupUserRequestDto;
+import com.example.newsfeed.dto.user.UpdateUserRequestDto;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.respository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +17,15 @@ import java.util.Optional;
 import com.example.newsfeed.dto.user.LoginRequestDto;
 import org.springframework.http.HttpStatus;
 import java.util.Objects;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public String signup(SignupUserRequestDto signupUserRequestDto) {
         User user = new User(signupUserRequestDto);
@@ -43,5 +50,19 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이름 혹은 잘못된 비밀번호입니다.");
         }
         return user;
+    }
+    @Transactional
+    public void updateUser(Long id, UpdateUserRequestDto requestDto,HttpServletRequest request) {
+
+        User user = userRepository.findById(id).get();
+        if(user.getUserId()!=null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
+            HttpSession session = request.getSession(false);
+            if(session !=null){
+                session.invalidate();
+            }
+            user.updateUser(requestDto.getUsername());
+        }
+
+
     }
 }
