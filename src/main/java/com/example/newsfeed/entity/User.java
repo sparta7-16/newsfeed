@@ -2,6 +2,7 @@ package com.example.newsfeed.entity;
 
 import com.example.newsfeed.dto.user.SignupUserRequestDto;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -9,7 +10,8 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
-public class User {
+@Getter
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
