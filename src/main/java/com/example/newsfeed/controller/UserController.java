@@ -39,7 +39,7 @@ public class UserController {
         ReadUserResponseDto userById = userService.findUserById(id);
         return new ResponseEntity<>(userById,HttpStatus.OK);
     }
-    @PatchMapping ("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
         userService.updateUser(id,requestDto,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
@@ -56,7 +56,7 @@ public class UserController {
         return new ResponseEntity<>("로그인 되었습니다.", HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<String> logoutUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
