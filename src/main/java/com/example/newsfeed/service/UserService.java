@@ -1,9 +1,7 @@
 package com.example.newsfeed.service;
 
 import com.example.newsfeed.config.PasswordEncoder;
-import com.example.newsfeed.dto.user.ReadUserResponseDto;
-import com.example.newsfeed.dto.user.SignupUserRequestDto;
-import com.example.newsfeed.dto.user.UpdateUserRequestDto;
+import com.example.newsfeed.dto.user.*;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.respository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.newsfeed.dto.user.LoginRequestDto;
 import org.springframework.http.HttpStatus;
 import java.util.Objects;
 
@@ -51,18 +48,32 @@ public class UserService {
         }
         return user;
     }
+
     @Transactional
-    public void updateUser(Long id, UpdateUserRequestDto requestDto,HttpServletRequest request) {
+    public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
 
         User user = userRepository.findById(id).get();
-        if(user.getUserId()!=null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
+        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             HttpSession session = request.getSession(false);
-            if(session !=null){
+            if (session != null) {
                 session.invalidate();
+
             }
             user.updateUser(requestDto.getUsername());
         }
+        user.updateUser(requestDto.getUsername());
 
 
+    }
+
+    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
+        User user = userRepository.findById(id).get();
+        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+        }
+        userRepository.delete(user);
     }
 }
