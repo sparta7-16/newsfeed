@@ -15,7 +15,7 @@ public class Post extends BaseEntity{
     @Column(nullable = true)
     private String title;
 
-    @Column(nullable = true, columnDefinition = "longtext")
+    @Column(nullable = true)
     private String content;
 
     public Post(String title, String content) {
@@ -27,10 +27,14 @@ public class Post extends BaseEntity{
 
     }
 
-    // FK키(User에서 @Entity와 @Id설정을 하지 않아서 오류 발생으로 인해 주석처리)
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
 
