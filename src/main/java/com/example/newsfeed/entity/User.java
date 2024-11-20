@@ -4,7 +4,10 @@ import com.example.newsfeed.dto.user.SignupUserRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,11 @@ public class User extends BaseEntity {
     private String username; // 유저 이름
     private String email; //이메일
     private String password; //패스워드
+    @Setter
+    private LocalDateTime leave_date; // 탈퇴날짜
+    @Column(name = "user_status")
+    @Setter
+    private String userStatus="Y"; // 회원상태
     public User(SignupUserRequestDto signupUserRequestDto) {
         this.username=signupUserRequestDto.getUsername();
         this.email=signupUserRequestDto.getEmail();
