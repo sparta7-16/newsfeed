@@ -1,8 +1,10 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.user.ReadUserResponseDto;
 import com.example.newsfeed.dto.user.LoginRequestDto;
 import com.example.newsfeed.dto.user.SignupUserRequestDto;
+import com.example.newsfeed.dto.user.UpdateUserRequestDto;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,10 +16,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -39,6 +38,11 @@ public class UserController {
     public ResponseEntity<ReadUserResponseDto> findUserById(@PathVariable Long id) {
         ReadUserResponseDto userById = userService.findUserById(id);
         return new ResponseEntity<>(userById,HttpStatus.OK);
+    }
+    @PatchMapping ("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
+        userService.updateUser(id,requestDto,request);
+        return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
     @PostMapping("/login")
