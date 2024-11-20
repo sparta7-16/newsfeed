@@ -1,13 +1,25 @@
 package com.example.newsfeed.service;
 
-import com.example.newsfeed.dto.user.LoginRequestDto;
+import com.example.newsfeed.dto.user.SignupUserRequestDto;
 import com.example.newsfeed.entity.User;
+import com.example.newsfeed.respository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import com.example.newsfeed.dto.user.LoginRequestDto;
 import org.springframework.http.HttpStatus;
+import java.util.Objects;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Objects;
-
+@RequiredArgsConstructor
+@Service
 public class UserService {
+    private final UserRepository userRepository;
+
+    public String signup(SignupUserRequestDto signupUserRequestDto) {
+        User user = new User(signupUserRequestDto);
+        User savedUser = userRepository.save(user);
+        return "가입완료하였습니다";
+    }
 
     public User loginUser(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail());
