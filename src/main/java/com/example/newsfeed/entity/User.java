@@ -1,5 +1,6 @@
 package com.example.newsfeed.entity;
 
+import com.example.newsfeed.dto.user.SignupUserRequestDto;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -15,4 +16,9 @@ public class User {
     private String username; // 유저 이름
     private String email; //이메일
     private String password; //패스워드
+    public User(SignupUserRequestDto signupUserRequestDto) {
+        this.username=signupUserRequestDto.getUsername();
+        this.email=signupUserRequestDto.getEmail();
+        this.password=signupUserRequestDto.getPassword();
+    }
 }
