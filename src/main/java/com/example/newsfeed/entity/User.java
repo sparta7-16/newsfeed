@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Entity
 @NoArgsConstructor
 @Getter
@@ -25,5 +24,11 @@ public class User extends BaseEntity {
         this.username=signupUserRequestDto.getUsername();
         this.email=signupUserRequestDto.getEmail();
         this.password=signupUserRequestDto.getPassword();
+    }
+
+    public void updateUser(String username) {
+
+        this.username = username;
+
     }
 }
