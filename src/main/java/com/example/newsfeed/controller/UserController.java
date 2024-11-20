@@ -1,13 +1,11 @@
 package com.example.newsfeed.controller;
 
 import com.example.newsfeed.config.PasswordEncoder;
-import com.example.newsfeed.dto.user.ReadUserResponseDto;
-import com.example.newsfeed.dto.user.LoginRequestDto;
-import com.example.newsfeed.dto.user.SignupUserRequestDto;
-import com.example.newsfeed.dto.user.UpdateUserRequestDto;
+import com.example.newsfeed.dto.user.*;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +41,12 @@ public class UserController {
     public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
         userService.updateUser(id,requestDto,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
+        userService.deleteUser(id,requestDto,request);
+        return new ResponseEntity<>("삭제되었습니다",HttpStatus.OK);
     }
 
     @PostMapping("/login")
