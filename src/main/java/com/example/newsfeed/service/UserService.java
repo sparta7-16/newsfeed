@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,6 +76,8 @@ public class UserService {
                 session.invalidate();
             }
         }
-        userRepository.delete(user);
+        user.setUserStatus("N");
+        user.setLeave_date(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
