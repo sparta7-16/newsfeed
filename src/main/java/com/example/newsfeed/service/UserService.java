@@ -27,10 +27,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public String signup(SignupUserRequestDto signupUserRequestDto) {
-        User user = new User(signupUserRequestDto);
-        User savedUser = userRepository.save(user);
+        User user = new User(signupUserRequestDto,passwordEncoder.encode(signupUserRequestDto.getPassword()));
+        if(userRepository.existsByEmail(signupUserRequestDto.getEmail())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 사용자 입니다");
+        }
+        userRepository.save(user);
         return "가입완료하였습니다";
     }
+
 
     public List<ReadUserResponseDto> findAllUser() {
         List<User> users = userRepository.findAllByUserStatus("Y");
@@ -55,7 +59,7 @@ public class UserService {
     public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
 
         User user = userRepository.findById(id).get();
-        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        if (user.getUserId() != null && passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 session.invalidate();
@@ -67,14 +71,15 @@ public class UserService {
 
 
     }
-
+    @Transactional
     public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
-        User user = userRepository.findById(id).get();
-        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
+        User user = userRepository.findByIdOrElseThrow(id);
+        if (user.getUserId() == null && !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+        }
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
         }
         user.setUserStatus("N");
         user.setLeave_date(LocalDateTime.now());
