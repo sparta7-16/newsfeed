@@ -11,12 +11,12 @@ public class ReadUserResponseDto {
     private Long userId;
     private String username;
     private String email;
-    private LocalDate created_date;
-    private LocalDate updated_date;
+    private LocalDateTime created_date;
+    private LocalDateTime updated_date;
     private LocalDateTime leave_date;
     private String userStatus;
 
-    public ReadUserResponseDto(Long userId, String username, String email, LocalDate created_date, LocalDate updated_date,LocalDateTime leave_date,String userStatus) {
+    public ReadUserResponseDto(Long userId, String username, String email, LocalDateTime created_date, LocalDateTime updated_date,LocalDateTime leave_date,String userStatus) {
         this.userId = userId;
         this.username = username;
         this.email = email;

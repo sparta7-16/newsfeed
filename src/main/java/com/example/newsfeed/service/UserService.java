@@ -33,12 +33,12 @@ public class UserService {
     }
 
     public List<ReadUserResponseDto> findAllUser() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByUserStatus("Y");
         return users.stream().map(ReadUserResponseDto::toUserResponseDto).toList();
     }
 
     public ReadUserResponseDto findUserById(Long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByUserIdAndUserStatus(id, "Y");
         return new ReadUserResponseDto(user);
     }
 
@@ -46,7 +46,7 @@ public class UserService {
         User user = userRepository.findByEmail(loginRequestDto.getEmail());
 
         if (user == null || !Objects.equals(user.getPassword(), loginRequestDto.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이름 혹은 잘못된 비밀번호입니다.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
         return user;
     }
