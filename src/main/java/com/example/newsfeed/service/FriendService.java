@@ -1,7 +1,6 @@
 package com.example.newsfeed.service;
 
 
-import com.example.newsfeed.dto.friend.FriendRequestDto;
 import com.example.newsfeed.dto.friend.FriendResponseDto;
 import com.example.newsfeed.entity.Friend;
 import com.example.newsfeed.entity.User;
@@ -21,12 +20,9 @@ public class FriendService {
     private final UserRepository userRepository;
 
     //친구 요청 보내기
-    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto) throws BadRequestException {
-        Long toUserId = requestDto.getToUserId();
-        Long fromUserId = requestDto.getFromUserId();
-
+    public FriendResponseDto sendFriendRequest(Long toUserId, Long fromUserId) throws BadRequestException {
         // 중복 요청 채크
-        if(friendRepository.existsByFriendId(toUserId,fromUserId)){
+        if(friendRepository.existsByToUser_UserIdAndFromUser_UserId(toUserId, fromUserId)) {
             throw new BadRequestException("이미 친구 요청을 보냈습니다");
         }
 
