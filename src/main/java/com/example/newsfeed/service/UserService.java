@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +33,12 @@ public class UserService {
     }
 
     public List<ReadUserResponseDto> findAllUser() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByUserStatus("Y");
         return users.stream().map(ReadUserResponseDto::toUserResponseDto).toList();
     }
 
     public ReadUserResponseDto findUserById(Long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByUserIdAndUserStatus(id, "Y");
         return new ReadUserResponseDto(user);
     }
 
@@ -74,6 +76,8 @@ public class UserService {
                 session.invalidate();
             }
         }
-        userRepository.delete(user);
+        user.setUserStatus("N");
+        user.setLeave_date(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
