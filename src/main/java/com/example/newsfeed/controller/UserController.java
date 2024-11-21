@@ -56,8 +56,7 @@ public class UserController {
         // 로그인 성공했으니까 Session 등록
         HttpSession session = request.getSession();
         session.setAttribute("SESSION_KEY", loginedUser.getUserId());
-
-//        return new ResponseEntity<>("로그인 되었습니다.", HttpStatus.OK);
+        
         return ResponseEntity.ok().body("로그인되었습니다");
     }
 
