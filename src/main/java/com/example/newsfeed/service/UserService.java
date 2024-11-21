@@ -33,12 +33,12 @@ public class UserService {
     }
 
     public List<ReadUserResponseDto> findAllUser() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByUserStatus("Y");
         return users.stream().map(ReadUserResponseDto::toUserResponseDto).toList();
     }
 
     public ReadUserResponseDto findUserById(Long id) {
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByUserIdAndUserStatus(id, "Y");
         return new ReadUserResponseDto(user);
     }
 
