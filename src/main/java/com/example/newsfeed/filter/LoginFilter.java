@@ -16,7 +16,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     // 회원가입, 로그인 요청은 인증 처리에서 제외
-    private static final String[] WHITE_LIST = {"/users", "/users/login"};
+    private static final String[] WHITE_LIST = {"/users/signup", "/users/login"};
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
