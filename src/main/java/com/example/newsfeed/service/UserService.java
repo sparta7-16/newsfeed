@@ -58,31 +58,30 @@ public class UserService {
     @Transactional
     public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
 
-        User user = userRepository.findById(id).get();
-        if (user.getUserId() != null && passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-
-            }
-            user.updateUser(requestDto.getUsername());
-        }
-        user.updateUser(requestDto.getUsername());
-
-
-    }
-    @Transactional
-    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
         User user = userRepository.findByIdOrElseThrow(id);
-        if (user.getUserId() == null && !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+        if (user.getUserId() == null || !passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+
         }
         HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
+        session.setAttribute("loginUser", user.getUserId());
+        user.updateUser(requestDto.getUsername());
+        userRepository.save(user);
+
+    }
+
+
+    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
+        User user = userRepository.findByIdOrElseThrow(id);
+        if (user.getUserId() == null || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+
         }
+        HttpSession session = request.getSession(false);
+        session.setAttribute("loginUser", user.getUserId());
         user.setUserStatus("N");
         user.setLeave_date(LocalDateTime.now());
         userRepository.save(user);
     }
+
 }
