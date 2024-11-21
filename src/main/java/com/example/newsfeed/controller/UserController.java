@@ -46,7 +46,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
         userService.deleteUser(id,requestDto,request);
-        return new ResponseEntity<>("삭제되었습니다",HttpStatus.OK);
+        return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);
     }
 
     @PostMapping("/login")
