@@ -7,10 +7,13 @@ import com.example.newsfeed.entity.Post;
 import com.example.newsfeed.respository.PostRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +29,11 @@ public class PostService {
         return PostResponseDto.toDto(savePost);
     }
 
+
     @Transactional
-    public List<PostResponseDto> findAll() {
-        List<Post> post = postRepository.findAll();
-        return post
-                .stream()
-                .map(PostResponseDto :: toDto)
-                .toList();
+    public Page<Post> getPostList(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        return postRepository.findAll(pageable);
     }
 
     @Transactional

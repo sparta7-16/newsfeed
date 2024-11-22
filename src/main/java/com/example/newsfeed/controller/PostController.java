@@ -3,18 +3,20 @@ package com.example.newsfeed.controller;
 import com.example.newsfeed.dto.post.PostRequestDto;
 import com.example.newsfeed.dto.post.PostResponseDto;
 import com.example.newsfeed.dto.post.PostUpdateRequestDto;
-import com.example.newsfeed.respository.PostRepository;
+import com.example.newsfeed.entity.Post;
 import com.example.newsfeed.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
@@ -25,8 +27,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> findAll(){
-        return ResponseEntity.ok().body(postService.findAll());
+    public ResponseEntity<Page<Post>> pageList(@RequestParam(value = "page", defaultValue = "0") int page) {
+        return ResponseEntity.ok().body(postService.getPostList(page));
     }
 
     @GetMapping("/{postId}")
