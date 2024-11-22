@@ -52,33 +52,36 @@ public class UserService {
         if (user == null || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
+
         return user;
     }
 
     @Transactional
-    public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
+    public void updateUser(UpdateUserRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
 
-        User user = userRepository.findByIdOrElseThrow(id);
-        if (user.getUserId() == null || !passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
 
         }
-        HttpSession session = request.getSession(false);
-        session.setAttribute("loginUser", user.getUserId());
+
         user.updateUser(requestDto.getUsername());
         userRepository.save(user);
 
     }
 
 
-    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
-        User user = userRepository.findByIdOrElseThrow(id);
+    public void deleteUser(DeleteRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
         if (user.getUserId() == null || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
 
         }
-        HttpSession session = request.getSession(false);
-        session.setAttribute("loginUser", user.getUserId());
+
         user.setUserStatus("N");
         user.setLeave_date(LocalDateTime.now());
         userRepository.save(user);
