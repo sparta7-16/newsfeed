@@ -61,7 +61,10 @@ public class UserController {
 
     @DeleteMapping("/me")
     public ResponseEntity<String> deleteUser( @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
-        userService.deleteUser(requestDto,request);
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        userService.deleteUser(requestDto,userId);
+        session.invalidate();
         return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);
     }
 

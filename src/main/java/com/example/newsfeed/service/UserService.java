@@ -47,6 +47,9 @@ public class UserService {
 
     public ReadUserResponseDto findUserById(Long id) {
         User user = userRepository.findByUserIdAndUserStatus(id, "Y");
+        if(user==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 입니다");
+        }
         return new ReadUserResponseDto(user);
     }
 
@@ -98,12 +101,10 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(DeleteRequestDto requestDto, HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("SESSION_KEY");
+    public void deleteUser(DeleteRequestDto requestDto, Long userId) {
         User user = userRepository.findByIdOrElseThrow(userId);
         if (user.getUserStatus().equals("N") || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 비밀번호 입니다");
 
         }
 
