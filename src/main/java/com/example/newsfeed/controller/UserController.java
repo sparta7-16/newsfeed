@@ -24,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
     private final UserService userService;
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult,HttpServletRequest request) {
+    public ResponseEntity<SignupUserResponseDto> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult,HttpServletRequest request) {
 
         HttpSession session = request.getSession();
 
@@ -32,8 +32,8 @@ public class UserController {
         if (session.getAttribute("SESSION_KEY") != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
         }
-
-        return new ResponseEntity<>(userService.signup(signupUserRequestDto,bindingResult),HttpStatus.CREATED);
+        SignupUserResponseDto signupUser = userService.signup(signupUserRequestDto, bindingResult);
+        return new ResponseEntity<>(signupUser,HttpStatus.CREATED);
     }
     @GetMapping
     public ResponseEntity<List<ReadUserResponseDto>> findAll(){
@@ -59,7 +59,7 @@ public class UserController {
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/me")
     public ResponseEntity<String> deleteUser( @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
         userService.deleteUser(requestDto,request);
         return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);

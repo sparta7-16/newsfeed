@@ -27,7 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public String signup(SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
+    public SignupUserResponseDto signup(SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 형식 입니다");
         }
@@ -35,8 +35,8 @@ public class UserService {
         if(userRepository.existsByEmail(signupUserRequestDto.getEmail())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 사용자 입니다");
         }
-        userRepository.save(user);
-        return "가입완료하였습니다";
+        User savedUser = userRepository.save(user);
+        return new SignupUserResponseDto(savedUser);
     }
 
 
@@ -97,7 +97,7 @@ public class UserService {
 
     }
 
-
+    @Transactional
     public void deleteUser(DeleteRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("SESSION_KEY");
