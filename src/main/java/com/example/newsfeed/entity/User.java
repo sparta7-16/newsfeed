@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -28,15 +25,21 @@ public class User extends BaseEntity {
     @Column(name = "user_status")
     @Setter
     private String userStatus="Y"; // 회원상태
-    public User(SignupUserRequestDto signupUserRequestDto) {
+    public User(SignupUserRequestDto signupUserRequestDto, String password) {
         this.username=signupUserRequestDto.getUsername();
         this.email=signupUserRequestDto.getEmail();
-        this.password=signupUserRequestDto.getPassword();
+        this.password=password;
     }
 
     public void updateUser(String username) {
 
         this.username = username;
+
+    }
+    public void updateUserPassword(String password) {
+
+
+        this.password = password;
 
     }
 }

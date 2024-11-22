@@ -27,10 +27,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public String signup(SignupUserRequestDto signupUserRequestDto) {
-        User user = new User(signupUserRequestDto);
-        User savedUser = userRepository.save(user);
+        User user = new User(signupUserRequestDto,passwordEncoder.encode(signupUserRequestDto.getPassword()));
+        if(userRepository.existsByEmail(signupUserRequestDto.getEmail())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 사용자 입니다");
+        }
+        userRepository.save(user);
         return "가입완료하였습니다";
     }
+
 
     public List<ReadUserResponseDto> findAllUser() {
         List<User> users = userRepository.findAllByUserStatus("Y");
@@ -45,39 +49,58 @@ public class UserService {
     public User loginUser(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail());
 
-        if (user == null || !Objects.equals(user.getPassword(), loginRequestDto.getPassword())) {
+        if (user == null || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
+
         return user;
     }
 
     @Transactional
-    public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
+    public void updateUser(UpdateUserRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
 
-        User user = userRepository.findById(id).get();
-        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
+        if (user.getUserStatus().equals("N")||!passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
 
-            }
-            user.updateUser(requestDto.getUsername());
         }
-        user.updateUser(requestDto.getUsername());
 
+        user.updateUser(requestDto.getUsername());
+        userRepository.save(user);
+
+    }
+    @Transactional
+    public void updateUserPassword(UpdateUserPasswordRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (user.getUserStatus().equals("N") || passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 비밀번호 입니다");
+
+        }
+        String encodePassword = passwordEncoder.encode(requestDto.getPassword());
+
+        user.updateUserPassword(encodePassword);
+        userRepository.save(user);
 
     }
 
-    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
-        User user = userRepository.findById(id).get();
-        if (user.getUserId() != null && passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
+
+    public void deleteUser(DeleteRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (user.getUserStatus().equals("N") || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
+
         }
+
         user.setUserStatus("N");
         user.setLeave_date(LocalDateTime.now());
         userRepository.save(user);
     }
+
+
 }
