@@ -108,7 +108,7 @@ public class UserService {
         }
 
         user.setUserStatus("N");
-        user.setLeave_date(LocalDateTime.now());
+        user.setLeaveDate(LocalDateTime.now());
         userRepository.save(user);
     }
 
