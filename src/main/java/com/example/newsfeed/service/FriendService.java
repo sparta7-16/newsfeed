@@ -31,10 +31,15 @@ public class FriendService {
             throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게 친구 요청을 보낼 수 없습니다.");
         }
 
-        // 중복 요청 채크
+        // 친구 요청 중복 체크
         if(friendRepository.existsByToUser_UserIdAndFromUser_UserId(toUserId, fromUserId)) {
             throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 요청을 보냈습니다.");
 
+        }
+
+        // 이미 친구 관계인지 확인
+        if (friendRepository.existsByToUser_UserIdAndFromUser_UserIdAndAreWeFriend(toUserId, fromUserId, true)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계입니다.");
         }
 
         //사용자 확인
@@ -63,10 +68,20 @@ public class FriendService {
     }
 
     //친구 요청 수락
-    public FriendResponseDto acceptFriendRequest(Long friendId) throws BadRequestException {
+    public FriendResponseDto acceptFriendRequest(Long friendId, Long currentUserId) {
         //요청 확인
         Friend friend = friendRepository.findById(friendId)
                 .orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 요청을 찾을 수 없습니다"));
+
+        // 요청을 받은 사용자만 접근 가능
+        if (!friend.getToUser().getUserId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 작업을 수행할 권한이 없습니다.");
+        }
+
+        // 이미 친구 관계인 경우 처리
+        if (friend.getAreWeFriend()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계로 수락된 요청은 거절할 수 없습니다.");
+        }
 
 
         friend.setAreWeFriend(true);
@@ -76,18 +91,29 @@ public class FriendService {
     }
 
     //친구 요청 거절
-    public FriendResponseDto declineFriendRequest(Long friendId) throws BadRequestException {
+    public FriendResponseDto declineFriendRequest(Long friendId, Long currentUserId) {
         //요청 확인
         Friend friend = friendRepository.findById(friendId)
                 .orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 요청을 찾을 수 없습니다"));
 
-        //요청 삭지
+
+        // 요청을 받은 사용자만 접근 가능
+        if (!friend.getToUser().getUserId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 작업을 수행할 권한이 없습니다.");
+        }
+
+        // 이미 친구 관계인 경우 처리
+        if (friend.getAreWeFriend()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계로 수락된 요청은 거절할 수 없습니다.");
+        }
+
+        //요청 삭제
         friendRepository.delete(friend);
         return new FriendResponseDto(friend.getFromUser().getUsername() + "의 요청을 거절했습니다.");
     }
 
     //친구 삭제
-    public FriendResponseDto deleteFriend(Long friendId) throws BadRequestException {
+    public FriendResponseDto deleteFriend(Long friendId) {
         Friend friend = friendRepository.findById(friendId).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 관계를 찾을 수 없습니다."));
 
         friendRepository.delete(friend);

@@ -39,22 +39,24 @@ public class FriendController {
 
     //친구 요청 수락
     @PostMapping("/{friendId}/accept")
-    public ResponseEntity<FriendResponseDto> acceptFriend(@PathVariable Long friendId) throws BadRequestException {
-        FriendResponseDto response = friendService.acceptFriendRequest(friendId);
+    public ResponseEntity<FriendResponseDto> acceptFriend(@PathVariable Long friendId, HttpServletRequest request)  {
+        Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        FriendResponseDto response = friendService.acceptFriendRequest(friendId, currentUserId);
         return ResponseEntity.ok(response);
     }
 
     //친구 요청 거절
     @PostMapping("/{friendId}/decline")
-    public ResponseEntity<FriendResponseDto> declineFriend(@PathVariable Long friendId) throws BadRequestException {
-        FriendResponseDto response = friendService.declineFriendRequest(friendId);
+    public ResponseEntity<FriendResponseDto> declineFriend(@PathVariable Long friendId, HttpServletRequest request) {
+        Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        FriendResponseDto response = friendService.declineFriendRequest(friendId, currentUserId);
         return ResponseEntity.ok(response);
     }
 
 
     //친구 삭제
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId) throws BadRequestException {
+    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId)  {
         FriendResponseDto response = friendService.deleteFriend(friendId);
         return ResponseEntity.ok(response);
     }
