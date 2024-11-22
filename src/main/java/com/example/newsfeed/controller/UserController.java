@@ -25,12 +25,8 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 형식 입니다");
-        }
-        String msg = userService.signup(signupUserRequestDto);
 
-        return new ResponseEntity<>(msg,HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.signup(signupUserRequestDto,bindingResult),HttpStatus.CREATED);
     }
     @GetMapping
     public ResponseEntity<List<ReadUserResponseDto>> findAll(){
@@ -45,19 +41,14 @@ public class UserController {
     }
     @PatchMapping("/usernames")
     public ResponseEntity<String> updateUser( @Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "변경하실 이름을 입력해주세요");
-        }
-        userService.updateUser(requestDto,request);
+
+        userService.updateUser(requestDto,bindingResult,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
     @PatchMapping("/passwords")
     public ResponseEntity<String> updateUserPassword( @Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "올바른 비밀번호를  입력해주세요");
-        }
 
-        userService.updateUserPassword(requestDto,request);
+        userService.updateUserPassword(requestDto,bindingResult,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
