@@ -30,5 +30,9 @@ public class Friend {
     @Column(nullable = false)
     private boolean areWeFriend;
 
+    public boolean getAreWeFriend() {
+        return areWeFriend;
+    }
+
 
 }
