@@ -24,7 +24,14 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
     private final UserService userService;
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
+    public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult,HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+
+        // 로그인 상태 확인
+        if (session.getAttribute("SESSION_KEY") != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
+        }
 
         return new ResponseEntity<>(userService.signup(signupUserRequestDto,bindingResult),HttpStatus.CREATED);
     }
