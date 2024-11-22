@@ -67,7 +67,22 @@ public class UserService {
 
         }
 
-        user.updateUser(requestDto.getUsername());
+        user.updateUserPassword(requestDto.getPassword());
+        userRepository.save(user);
+
+    }
+    @Transactional
+    public void updateUserPassword(UpdateUserPasswordRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (user.getUserStatus().equals("N") || passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 비밀번호 입니다");
+
+        }
+        String encodePassword = passwordEncoder.encode(requestDto.getPassword());
+
+        user.updateUserPassword(encodePassword);
         userRepository.save(user);
 
     }
@@ -86,5 +101,6 @@ public class UserService {
         user.setLeave_date(LocalDateTime.now());
         userRepository.save(user);
     }
+
 
 }

@@ -43,12 +43,21 @@ public class UserController {
         ReadUserResponseDto userById = userService.findUserById(id);
         return new ResponseEntity<>(userById,HttpStatus.OK);
     }
-    @PatchMapping
+    @PatchMapping("/usernames")
     public ResponseEntity<String> updateUser( @Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
         if(bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "변경하실 이름을 입력해주세요");
         }
         userService.updateUser(requestDto,request);
+        return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
+    }
+    @PatchMapping("/passwords")
+    public ResponseEntity<String> updateUserPassword( @Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
+        if(bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "올바른 비밀번호를  입력해주세요");
+        }
+
+        userService.updateUserPassword(requestDto,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
