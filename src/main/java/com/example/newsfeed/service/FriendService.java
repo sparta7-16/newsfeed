@@ -9,7 +9,9 @@ import com.example.newsfeed.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,17 +28,18 @@ public class FriendService {
     public FriendResponseDto sendFriendRequest(Long toUserId, Long fromUserId) throws BadRequestException {
         // 자기 자신에게 친구 요청 금지
         if (toUserId.equals(fromUserId)) {
-            throw new BadRequestException("자기 자신에게 친구 요청을 보낼 수 없습니다.");
+            throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게 친구 요청을 보낼 수 없습니다.");
         }
 
         // 중복 요청 채크
         if(friendRepository.existsByToUser_UserIdAndFromUser_UserId(toUserId, fromUserId)) {
-            throw new BadRequestException("이미 친구 요청을 보냈습니다");
+            throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 요청을 보냈습니다.");
+
         }
 
         //사용자 확인
-        User toUser = userRepository.findById(toUserId).orElseThrow(()->new BadRequestException("요청 받은 사용자가 존재하지 않습니다"));
-        User fromUser = userRepository.findById(fromUserId).orElseThrow(()->new BadRequestException("요청을 보낸 사용자가 존재하지 않습니다"));
+        User toUser = userRepository.findById(toUserId).orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "요청 받은 사용자가 존재하지 않습니다"));
+        User fromUser = userRepository.findById(fromUserId).orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "요청을 보낸 사용자가 존재하지 않습니다"));
 
         //friend 엔티티 생성
         Friend friend = new Friend();
@@ -63,7 +66,8 @@ public class FriendService {
     public FriendResponseDto acceptFriendRequest(Long friendId) throws BadRequestException {
         //요청 확인
         Friend friend = friendRepository.findById(friendId)
-                .orElseThrow(()-> new BadRequestException("친구 요청을 찾을 수 없습니다"));
+                .orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 요청을 찾을 수 없습니다"));
+
 
         friend.setAreWeFriend(true);
         friendRepository.save(friend);
@@ -75,7 +79,7 @@ public class FriendService {
     public FriendResponseDto declineFriendRequest(Long friendId) throws BadRequestException {
         //요청 확인
         Friend friend = friendRepository.findById(friendId)
-                .orElseThrow(()-> new BadRequestException("친구 요청을 찾을 수 없습니다"));
+                .orElseThrow(()-> new  ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 요청을 찾을 수 없습니다"));
 
         //요청 삭지
         friendRepository.delete(friend);
@@ -84,7 +88,7 @@ public class FriendService {
 
     //친구 삭제
     public FriendResponseDto deleteFriend(Long friendId) throws BadRequestException {
-        Friend friend = friendRepository.findById(friendId).orElseThrow(()->new BadRequestException("친구 관계를 찾을 수 없습니다."));
+        Friend friend = friendRepository.findById(friendId).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 관계를 찾을 수 없습니다."));
 
         friendRepository.delete(friend);
         return new FriendResponseDto("삭제 완료되었습니다.");

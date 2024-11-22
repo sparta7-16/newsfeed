@@ -51,10 +51,6 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<FriendResponseDto> handleException(Exception e) {
-        return ResponseEntity.status(400).body(new FriendResponseDto(e.getMessage()));
-    }
 
     //친구 삭제
     @DeleteMapping("/{friendId}")
