@@ -62,8 +62,8 @@ public class UserService {
         Long userId = (Long) session.getAttribute("SESSION_KEY");
         User user = userRepository.findByIdOrElseThrow(userId);
 
-        if (!passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+        if (user.getUserStatus().equals("N")||!passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
 
         }
 
@@ -77,8 +77,8 @@ public class UserService {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("SESSION_KEY");
         User user = userRepository.findByIdOrElseThrow(userId);
-        if (user.getUserId() == null || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+        if (user.getUserStatus().equals("N") || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
 
         }
 

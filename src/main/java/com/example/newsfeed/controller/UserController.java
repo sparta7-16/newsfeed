@@ -25,10 +25,10 @@ public class UserController {
     private final UserService userService;
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
-        String msg = userService.signup(signupUserRequestDto);
         if(bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 형식 입니다");
         }
+        String msg = userService.signup(signupUserRequestDto);
 
         return new ResponseEntity<>(msg,HttpStatus.CREATED);
     }
@@ -44,7 +44,10 @@ public class UserController {
         return new ResponseEntity<>(userById,HttpStatus.OK);
     }
     @PatchMapping
-    public ResponseEntity<String> updateUser( @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<String> updateUser( @Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
+        if(bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "변경하실 이름을 입력해주세요");
+        }
         userService.updateUser(requestDto,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
