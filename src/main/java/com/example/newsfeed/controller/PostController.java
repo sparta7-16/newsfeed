@@ -27,8 +27,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Post>> pageList(@RequestParam(value = "page", defaultValue = "0") int page) {
-        return ResponseEntity.ok().body(postService.getPostList(page));
+    public ResponseEntity<Page<Post>> pageList(@RequestParam(value = "page", defaultValue = "1") int page) {
+        return ResponseEntity.ok().body(postService.getPostList(page-1));
     }
 
     @GetMapping("/{postId}")
