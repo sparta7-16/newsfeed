@@ -57,8 +57,15 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
 
-        // 로그인 성공했으니까 Session 등록
+        // 로그인 성공했으니까 Session 생성
         HttpSession session = request.getSession();
+
+        // 로그인 상태 확인
+        if (session.getAttribute("SESSION_KEY") != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
+        }
+
+        // Session 등록
         session.setAttribute("SESSION_KEY", user.getUserId());
     }
 
