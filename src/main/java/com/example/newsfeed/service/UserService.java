@@ -67,7 +67,7 @@ public class UserService {
 
         }
 
-        user.updateUserPassword(requestDto.getPassword());
+        user.updateUser(requestDto.getUsername());
         userRepository.save(user);
 
     }
