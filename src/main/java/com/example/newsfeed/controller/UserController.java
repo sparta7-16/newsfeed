@@ -60,11 +60,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
-        User loginedUser = userService.loginUser(loginRequestDto);
-
-        // 로그인 성공했으니까 Session 등록
-        HttpSession session = request.getSession();
-        session.setAttribute("SESSION_KEY", loginedUser.getUserId());
+        userService.loginUser(loginRequestDto, request);
         
         return ResponseEntity.ok().body("로그인되었습니다");
     }
