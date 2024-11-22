@@ -43,15 +43,15 @@ public class UserController {
         ReadUserResponseDto userById = userService.findUserById(id);
         return new ResponseEntity<>(userById,HttpStatus.OK);
     }
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
-        userService.updateUser(id,requestDto,request);
+    @PatchMapping
+    public ResponseEntity<String> updateUser( @RequestBody UpdateUserRequestDto requestDto, HttpServletRequest request) {
+        userService.updateUser(requestDto,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
-        userService.deleteUser(id,requestDto,request);
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser( @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
+        userService.deleteUser(requestDto,request);
         return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);
     }
 
