@@ -60,8 +60,18 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
-        userService.loginUser(loginRequestDto, request);
+        User loginedUser = userService.loginUser(loginRequestDto);
 
+        // 로그인 성공했으니까 Session 생성
+        HttpSession session = request.getSession();
+
+        // 로그인 상태 확인
+        if (session.getAttribute("SESSION_KEY") != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
+        }
+
+        // Session 등록
+        session.setAttribute("SESSION_KEY", loginedUser.getUserId());
         return ResponseEntity.ok().body("로그인되었습니다");
     }
 
