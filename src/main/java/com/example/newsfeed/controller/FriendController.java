@@ -46,7 +46,7 @@ public class FriendController {
     }
 
     //친구 요청 거절
-    @PostMapping("/{friendId}/decline")
+    @DeleteMapping("/{friendId}/decline")
     public ResponseEntity<FriendResponseDto> declineFriend(@PathVariable Long friendId, HttpServletRequest request) {
         Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
         FriendResponseDto response = friendService.declineFriendRequest(friendId, currentUserId);
