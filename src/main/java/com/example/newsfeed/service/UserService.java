@@ -52,36 +52,55 @@ public class UserService {
         if (user == null || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
+
         return user;
     }
 
     @Transactional
-    public void updateUser(Long id, UpdateUserRequestDto requestDto, HttpServletRequest request) {
+    public void updateUser(UpdateUserRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
 
-        User user = userRepository.findByIdOrElseThrow(id);
-        if (user.getUserId() == null || !passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+        if (user.getUserStatus().equals("N")||!passwordEncoder.matches(requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
 
         }
+
+        user.updateUserPassword(requestDto.getPassword());
+        userRepository.save(user);
+
+    }
+    @Transactional
+    public void updateUserPassword(UpdateUserPasswordRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        session.setAttribute("loginUser", user.getUserId());
-        user.updateUser(requestDto.getUsername());
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (user.getUserStatus().equals("N") || passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "중복된 비밀번호 입니다");
+
+        }
+        String encodePassword = passwordEncoder.encode(requestDto.getPassword());
+
+        user.updateUserPassword(encodePassword);
         userRepository.save(user);
 
     }
 
 
-    public void deleteUser(Long id, DeleteRequestDto requestDto, HttpServletRequest request) {
-        User user = userRepository.findByIdOrElseThrow(id);
-        if (user.getUserId() == null || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 잘못된 비밀번호입니다");
+    public void deleteUser(DeleteRequestDto requestDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if (user.getUserStatus().equals("N") || !passwordEncoder.matches( requestDto.getPassword(),user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 정보 입니다");
 
         }
-        HttpSession session = request.getSession(false);
-        session.setAttribute("loginUser", user.getUserId());
+
         user.setUserStatus("N");
         user.setLeave_date(LocalDateTime.now());
         userRepository.save(user);
     }
+
 
 }
