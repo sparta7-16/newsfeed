@@ -40,8 +40,8 @@ public class Post extends BaseEntity{
         this.content = content;
     }
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

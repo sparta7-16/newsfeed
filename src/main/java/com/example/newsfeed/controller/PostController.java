@@ -29,18 +29,18 @@ public class PostController {
         return ResponseEntity.ok().body(postService.findAll());
     }
 
-    @GetMapping("{/postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> findById(@PathVariable Long postId) {
         return ResponseEntity.ok().body(postService.findById(postId));
     }
 
-    @PatchMapping("/postId")
+    @PatchMapping("/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto updateRequestDto,
                                                       @PathVariable Long postId) {
         return ResponseEntity.ok().body(postService.updatePost(postId, updateRequestDto));
     }
 
-    @DeleteMapping("/postId")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().body("삭제되었습니다");

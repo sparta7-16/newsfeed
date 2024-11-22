@@ -13,10 +13,10 @@ public class PostResponseDto {
     private final Long postId;
     private final String title;
     private final String content;
-    private final LocalDate createdDate;
-    private final LocalDate updateDate;
+    private final LocalDateTime createdDate;
+    private final LocalDateTime updateDate;
 
-    public PostResponseDto(Long PostId, String title, String content, LocalDate createdDate, LocalDate updateDate) {
+    public PostResponseDto(Long PostId, String title, String content, LocalDateTime createdDate, LocalDateTime updateDate) {
         this.postId = PostId;
         this.title = title;
         this.content = content;
