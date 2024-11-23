@@ -24,13 +24,16 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
     private final UserService userService;
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 형식 입니다");
-        }
-        String msg = userService.signup(signupUserRequestDto);
+    public ResponseEntity<SignupUserResponseDto> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult,HttpServletRequest request) {
 
-        return new ResponseEntity<>(msg,HttpStatus.CREATED);
+        HttpSession session = request.getSession();
+
+        // 로그인 상태 확인
+        if (session.getAttribute("SESSION_KEY") != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
+        }
+        SignupUserResponseDto signupUser = userService.signup(signupUserRequestDto, bindingResult);
+        return new ResponseEntity<>(signupUser,HttpStatus.CREATED);
     }
     @GetMapping
     public ResponseEntity<List<ReadUserResponseDto>> findAll(){
@@ -45,25 +48,23 @@ public class UserController {
     }
     @PatchMapping("/usernames")
     public ResponseEntity<String> updateUser( @Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "변경하실 이름을 입력해주세요");
-        }
-        userService.updateUser(requestDto,request);
+
+        userService.updateUser(requestDto,bindingResult,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
     @PatchMapping("/passwords")
     public ResponseEntity<String> updateUserPassword( @Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
-        if(bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "올바른 비밀번호를  입력해주세요");
-        }
 
-        userService.updateUserPassword(requestDto,request);
+        userService.updateUserPassword(requestDto,bindingResult,request);
         return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/me")
     public ResponseEntity<String> deleteUser( @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
-        userService.deleteUser(requestDto,request);
+        HttpSession session = request.getSession(false);
+        Long userId = (Long) session.getAttribute("SESSION_KEY");
+        userService.deleteUser(requestDto,userId);
+        session.invalidate();
         return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);
     }
 
@@ -71,10 +72,16 @@ public class UserController {
     public ResponseEntity<String> loginUser(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
         User loginedUser = userService.loginUser(loginRequestDto);
 
-        // 로그인 성공했으니까 Session 등록
+        // 로그인 성공했으니까 Session 생성
         HttpSession session = request.getSession();
+
+        // 로그인 상태 확인
+        if (session.getAttribute("SESSION_KEY") != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
+        }
+
+        // Session 등록
         session.setAttribute("SESSION_KEY", loginedUser.getUserId());
-        
         return ResponseEntity.ok().body("로그인되었습니다");
     }
 

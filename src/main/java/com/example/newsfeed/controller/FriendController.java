@@ -9,6 +9,8 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/friends")
 @RequiredArgsConstructor
@@ -27,14 +29,34 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<FriendResponseDto> handleException(Exception e) {
-        return ResponseEntity.status(400).body(new FriendResponseDto(e.getMessage()));
+    //친구 요청 목록 확인
+    @GetMapping("/requests")
+    public ResponseEntity<List<FriendResponseDto>> getFriendRequests(HttpServletRequest request) {
+        Long userId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        List<FriendResponseDto> friendRequests = friendService.getFriendsRequests(userId);
+        return ResponseEntity.ok(friendRequests);
     }
+
+    //친구 요청 수락
+    @PostMapping("/{friendId}/accept")
+    public ResponseEntity<FriendResponseDto> acceptFriend(@PathVariable Long friendId, HttpServletRequest request)  {
+        Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        FriendResponseDto response = friendService.acceptFriendRequest(friendId, currentUserId);
+        return ResponseEntity.ok(response);
+    }
+
+    //친구 요청 거절
+    @DeleteMapping("/{friendId}/decline")
+    public ResponseEntity<FriendResponseDto> declineFriend(@PathVariable Long friendId, HttpServletRequest request) {
+        Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        FriendResponseDto response = friendService.declineFriendRequest(friendId, currentUserId);
+        return ResponseEntity.ok(response);
+    }
+
 
     //친구 삭제
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId) throws BadRequestException {
+    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId)  {
         FriendResponseDto response = friendService.deleteFriend(friendId);
         return ResponseEntity.ok(response);
     }
