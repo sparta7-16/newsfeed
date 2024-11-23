@@ -2,10 +2,12 @@ package com.example.newsfeed.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "post")
+@NoArgsConstructor
 public class Post extends BaseEntity{
 
     @Id
@@ -23,9 +25,7 @@ public class Post extends BaseEntity{
         this.content = content;
     }
 
-    public Post() {
 
-    }
 
     public void update(String title, String content) {
         this.title = title;

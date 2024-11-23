@@ -1,5 +1,6 @@
 package com.example.newsfeed.service;
 
+import com.example.newsfeed.dto.post.PostPageableResponseDto;
 import com.example.newsfeed.dto.post.PostRequestDto;
 import com.example.newsfeed.dto.post.PostResponseDto;
 import com.example.newsfeed.dto.post.PostUpdateRequestDto;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +23,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer;
 
     @Transactional
     public PostResponseDto createPost(PostRequestDto postRequestDto) {
@@ -32,9 +35,12 @@ public class PostService {
 
 
     @Transactional
-    public Page<Post> getPostList(int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdDate")));
-        return postRepository.findAll(pageable);
+    public List<PostResponseDto> getPostList(Pageable pageable ) {
+        int page = pageable.getPageNumber() - 1;
+        int pageLimit = 10;
+        List<Post> postsPages = postRepository.findAllByOrderByCreatedDateDesc(PageRequest.of(page, 10));
+        return postsPages.stream().map(PostResponseDto :: toDto).toList();
+
     }
 
     @Transactional

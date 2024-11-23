@@ -1,17 +1,21 @@
 package com.example.newsfeed.controller;
 
+import com.example.newsfeed.dto.post.PostPageableResponseDto;
 import com.example.newsfeed.dto.post.PostRequestDto;
 import com.example.newsfeed.dto.post.PostResponseDto;
 import com.example.newsfeed.dto.post.PostUpdateRequestDto;
 import com.example.newsfeed.entity.Post;
 import com.example.newsfeed.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 
 
 @RestController
@@ -27,8 +31,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Post>> pageList(@RequestParam(value = "page", defaultValue = "1") int page) {
-        return ResponseEntity.ok().body(postService.getPostList(page-1));
+    public ResponseEntity<List<PostResponseDto>> pageList(@PageableDefault(page = 1)Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.getPostList(pageable));
     }
 
     @GetMapping("/{postId}")
