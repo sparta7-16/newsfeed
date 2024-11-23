@@ -1,7 +1,6 @@
 package com.example.newsfeed.respository;
 
 import com.example.newsfeed.entity.Post;
-import com.example.newsfeed.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -12,4 +11,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByOrderByCreatedDateDesc(Pageable pageable);
 
+    Long findUserIdByPostId(Long postId);
 }

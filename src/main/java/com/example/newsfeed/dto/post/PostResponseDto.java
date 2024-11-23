@@ -12,14 +12,16 @@ import java.time.LocalDateTime;
 public class PostResponseDto {
 
 
-    private final User user;
+    private final Long userId;
+    private final Long postId;
     private final String title;
     private final String content;
     private final LocalDateTime createdDate;
     private final LocalDateTime updateDate;
 
-    public PostResponseDto(User user, String title, String content, LocalDateTime createdDate, LocalDateTime updateDate) {
-        this.user = user;
+    public PostResponseDto(Long userId, Long postId, String title, String content, LocalDateTime createdDate, LocalDateTime updateDate) {
+        this.userId = userId;
+        this.postId = postId;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
@@ -28,7 +30,8 @@ public class PostResponseDto {
 
     public static PostResponseDto toDto(Post post) {
         return new PostResponseDto(
-                post.getUser(),
+                post.getUser().getUserId(),
+                post.getPostId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getCreatedDate(),
