@@ -56,7 +56,7 @@ public class UserService {
     public User loginUser(LoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail());
 
-        if (user == null || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+        if (user == null || user.getUserStatus().equals("N")  || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 사용자 이메일 혹은 잘못된 비밀번호입니다");
         }
 
