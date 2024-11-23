@@ -1,6 +1,7 @@
 package com.example.newsfeed.dto.post;
 
 import com.example.newsfeed.entity.Post;
+import com.example.newsfeed.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,14 +11,15 @@ import java.time.LocalDateTime;
 @Getter
 public class PostResponseDto {
 
-    private final Long postId;
+
+    private final User user;
     private final String title;
     private final String content;
     private final LocalDateTime createdDate;
     private final LocalDateTime updateDate;
 
-    public PostResponseDto(Long PostId, String title, String content, LocalDateTime createdDate, LocalDateTime updateDate) {
-        this.postId = PostId;
+    public PostResponseDto(User user, String title, String content, LocalDateTime createdDate, LocalDateTime updateDate) {
+        this.user = user;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
@@ -26,7 +28,7 @@ public class PostResponseDto {
 
     public static PostResponseDto toDto(Post post) {
         return new PostResponseDto(
-                post.getPostId(),
+                post.getUser(),
                 post.getTitle(),
                 post.getContent(),
                 post.getCreatedDate(),

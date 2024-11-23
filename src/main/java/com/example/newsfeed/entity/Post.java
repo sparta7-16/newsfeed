@@ -11,18 +11,20 @@ import lombok.NoArgsConstructor;
 public class Post extends BaseEntity{
 
     @Id
+    @Column(name = "post_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "title")
     private String title;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "content")
     private String content;
 
-    public Post(String title, String content) {
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
 
