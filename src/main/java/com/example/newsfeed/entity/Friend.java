@@ -28,10 +28,10 @@ public class Friend {
 
     // 친구 관계 여부
     @Column(nullable = false)
-    private boolean areWeFriend;
+    private boolean friendStatus;
 
-    public boolean getAreWeFriend() {
-        return areWeFriend;
+    public boolean getFriendStatus() {
+        return friendStatus;
     }
 
 

@@ -37,7 +37,7 @@ public class FriendService {
         }
 
         // 이미 친구 관계인지 확인
-        if (friendRepository.existsByToUser_UserIdAndFromUser_UserIdAndAreWeFriend(toUserId, fromUserId, true)) {
+        if (friendRepository.existsByToUser_UserIdAndFromUser_UserIdAndFriendStatus(toUserId, fromUserId, true)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계입니다.");
         }
 
@@ -49,7 +49,7 @@ public class FriendService {
         Friend friend = new Friend();
         friend.setToUser(toUser);
         friend.setFromUser(fromUser);
-        friend.setAreWeFriend(false); //초기 상태: 친구 아님
+        friend.setFriendStatus(false); //초기 상태: 친구 아님
         friendRepository.save(friend);
 
         return new FriendResponseDto(" 요청 완료 되었습니다.");
@@ -58,7 +58,7 @@ public class FriendService {
     //친구 요청 목록 확인
     public List<FriendResponseDto> getFriendsRequests(Long userId) {
         //로그인 사용자가 받은 친구 요청 목록 조회
-        List<Friend> requests = friendRepository.findByToUser_UserIdAndAreWeFriend(userId, false);
+        List<Friend> requests = friendRepository.findByToUser_UserIdAndFriendStatus(userId, false);
 
         return requests.stream()
                 .map(request -> new FriendResponseDto(
@@ -78,12 +78,12 @@ public class FriendService {
         }
 
         // 이미 친구 관계인 경우 처리
-        if (friend.getAreWeFriend()) {
+        if (friend.getFriendStatus()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계로 수락된 요청은 거절할 수 없습니다.");
         }
 
 
-        friend.setAreWeFriend(true);
+        friend.setFriendStatus(true);
         friendRepository.save(friend);
 
         return new FriendResponseDto(friend.getFromUser().getUsername() + "와 친구가 되었습니다");
@@ -102,7 +102,7 @@ public class FriendService {
         }
 
         // 이미 친구 관계인 경우 처리
-        if (friend.getAreWeFriend()) {
+        if (friend.getFriendStatus()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 친구 관계로 수락된 요청은 거절할 수 없습니다.");
         }
 
@@ -126,13 +126,13 @@ public class FriendService {
     // 특정 사용자가 삭제되었을 때 친구 관계를 false로 설정
     public void handleUserDeletion(Long userId) {
         // 사용자가 받은 친구 요청 중 수락된 상태인 경우 처리
-        List<Friend> friendsAsToUser = friendRepository.findByToUser_UserIdAndAreWeFriend(userId, true);
+        List<Friend> friendsAsToUser = friendRepository.findByToUser_UserIdAndFriendStatus(userId, true);
         // 사용자가 보낸 친구 요청 중 수락된 상태인 경우 처리
-        List<Friend> friendsAsFromUser = friendRepository.findByFromUser_UserIdAndAreWeFriend(userId, true);
+        List<Friend> friendsAsFromUser = friendRepository.findByFromUser_UserIdAndFriendStatus(userId, true);
 
         // 상태를 false로 변경
-        friendsAsToUser.forEach(friend -> friend.setAreWeFriend(false));
-        friendsAsFromUser.forEach(friend -> friend.setAreWeFriend(false));
+        friendsAsToUser.forEach(friend -> friend.setFriendStatus(false));
+        friendsAsFromUser.forEach(friend -> friend.setFriendStatus(false));
 
         // 변경 사항 저장
         friendRepository.saveAll(friendsAsToUser);
