@@ -56,8 +56,9 @@ public class FriendController {
 
     //친구 삭제
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId)  {
-        FriendResponseDto response = friendService.deleteFriend(friendId);
+    public ResponseEntity<FriendResponseDto> deleteFriend(@PathVariable Long friendId, HttpServletRequest request) {
+        Long currentUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
+        FriendResponseDto response = friendService.deleteFriend(friendId, currentUserId);
         return ResponseEntity.ok(response);
     }
 

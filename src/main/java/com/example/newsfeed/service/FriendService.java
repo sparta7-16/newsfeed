@@ -112,8 +112,13 @@ public class FriendService {
     }
 
     //친구 삭제
-    public FriendResponseDto deleteFriend(Long friendId) {
+    public FriendResponseDto deleteFriend(Long friendId, Long currentUserId) {
         Friend friend = friendRepository.findById(friendId).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "친구 관계를 찾을 수 없습니다."));
+
+        // 현재 사용자가 친구 관계의 대상인지 확인
+        if (!friend.getToUser().getUserId().equals(currentUserId) && !friend.getFromUser().getUserId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 작업을 수행할 권한이 없습니다.");
+        }
 
         friendRepository.delete(friend);
         return new FriendResponseDto("삭제 완료되었습니다.");
