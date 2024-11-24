@@ -25,7 +25,7 @@ public class FriendService {
     private final UserRepository userRepository;
 
     //친구 요청 보내기
-    public FriendResponseDto sendFriendRequest(Long toUserId, Long fromUserId) throws BadRequestException {
+    public FriendResponseDto sendFriendRequest(Long toUserId, Long fromUserId)  {
         // 자기 자신에게 친구 요청 금지
         if (toUserId.equals(fromUserId)) {
             throw new  ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신에게 친구 요청을 보낼 수 없습니다.");
