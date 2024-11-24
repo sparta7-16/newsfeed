@@ -21,7 +21,7 @@ public class FriendController {
     //친구 요청 보내기
     @PostMapping
     public ResponseEntity<FriendResponseDto> sendFriendRequest(@RequestBody FriendRequestDto requestDto,
-                                                               HttpServletRequest request) throws BadRequestException {
+                                                               HttpServletRequest request){
         //세션에서 사용자 ID가져오기
         Long fromUserId = (Long) request.getSession().getAttribute("SESSION_KEY");
 
