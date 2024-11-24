@@ -1,6 +1,5 @@
 package com.example.newsfeed.dto.post;
 
-import com.example.newsfeed.entity.User;
 import lombok.Getter;
 
 @Getter

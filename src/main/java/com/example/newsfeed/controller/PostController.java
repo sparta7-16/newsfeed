@@ -24,23 +24,21 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(postRequestDto,request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(postRequestDto, request));
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> pageList(@PageableDefault(page = 1)Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.getPostList(pageable));
+    public ResponseEntity<List<PostResponseDto>> findAllPost(@PageableDefault(page = 1) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.findAllPost(pageable));
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> findById(@PathVariable Long postId, HttpServletRequest request) {
-        return ResponseEntity.ok().body(postService.findById(postId, request));
+    public ResponseEntity<PostResponseDto> findPostByPostId(@PathVariable Long postId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(postService.findPostByPostId(postId, request));
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto updateRequestDto,
-                                                      @PathVariable Long postId,
-                                                      HttpServletRequest request) {
+    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto updateRequestDto, @PathVariable Long postId, HttpServletRequest request) {
         return ResponseEntity.ok().body(postService.updatePost(postId, updateRequestDto, request));
     }
 
