@@ -16,7 +16,7 @@ import java.util.List;
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private Long userId;
     @Column(name = "user_name")
     private String username; // 유저 이름
@@ -27,19 +27,19 @@ public class User extends BaseEntity {
     private LocalDateTime leaveDate; // 탈퇴날짜
     @Column(name = "user_status")
     @Setter
-    private String userStatus="Y"; // 회원상태
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
-    private List<Post>posts=new ArrayList<>();
+    private String userStatus = "Y"; // 회원상태
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "toUser")
-    private List<Friend>sendFriends=new ArrayList<>();
-    @OneToMany(mappedBy = "fromUser",cascade = CascadeType.REMOVE)
-    private List<Friend>receiveFriends=new ArrayList<>();
-    public User(SignupUserRequestDto signupUserRequestDto, String password) {
-        this.username=signupUserRequestDto.getUsername();
-        this.email=signupUserRequestDto.getEmail();
-        this.password=password;
-    }
+    private List<Friend> sendFriends = new ArrayList<>();
+    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL)
+    private List<Friend> receiveFriends = new ArrayList<>();
 
+    public User(SignupUserRequestDto signupUserRequestDto, String password) {
+        this.username = signupUserRequestDto.getUsername();
+        this.email = signupUserRequestDto.getEmail();
+        this.password = password;
+    }
 
 
     public void updateUser(String username) {
@@ -47,6 +47,7 @@ public class User extends BaseEntity {
         this.username = username;
 
     }
+
     public void updateUserPassword(String password) {
 
 

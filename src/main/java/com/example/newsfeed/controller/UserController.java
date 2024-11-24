@@ -1,30 +1,28 @@
 package com.example.newsfeed.controller;
 
-import com.example.newsfeed.config.PasswordEncoder;
 import com.example.newsfeed.dto.user.*;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+
     @PostMapping("/signup")
-    public ResponseEntity<SignupUserResponseDto> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult,HttpServletRequest request) {
+    public ResponseEntity<SignupUserResponseDto> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult, HttpServletRequest request) {
 
         HttpSession session = request.getSession();
 
@@ -33,39 +31,43 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 로그인 된 상태입니다");
         }
         SignupUserResponseDto signupUser = userService.signup(signupUserRequestDto, bindingResult);
-        return new ResponseEntity<>(signupUser,HttpStatus.CREATED);
+        return new ResponseEntity<>(signupUser, HttpStatus.CREATED);
     }
+
     @GetMapping
-    public ResponseEntity<List<ReadUserResponseDto>> findAll(){
+    public ResponseEntity<List<ReadUserResponseDto>> findAll() {
         List<ReadUserResponseDto> responseDtos = userService.findAllUser();
-        return new ResponseEntity<>(responseDtos,HttpStatus.OK);
+        return new ResponseEntity<>(responseDtos, HttpStatus.OK);
 
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ReadUserResponseDto> findUserById(@PathVariable Long id) {
         ReadUserResponseDto userById = userService.findUserById(id);
-        return new ResponseEntity<>(userById,HttpStatus.OK);
+        return new ResponseEntity<>(userById, HttpStatus.OK);
     }
+
     @PatchMapping("/usernames")
-    public ResponseEntity<String> updateUser( @Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
+    public ResponseEntity<String> updateUser(@Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult, HttpServletRequest request) {
 
-        userService.updateUser(requestDto,bindingResult,request);
-        return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
+        userService.updateUser(requestDto, bindingResult, request);
+        return new ResponseEntity<>("수정되었습니다", HttpStatus.OK);
     }
-    @PatchMapping("/passwords")
-    public ResponseEntity<String> updateUserPassword( @Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult,HttpServletRequest request) {
 
-        userService.updateUserPassword(requestDto,bindingResult,request);
-        return new ResponseEntity<>("수정되었습니다",HttpStatus.OK);
+    @PatchMapping("/passwords")
+    public ResponseEntity<String> updateUserPassword(@Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult, HttpServletRequest request) {
+
+        userService.updateUserPassword(requestDto, bindingResult, request);
+        return new ResponseEntity<>("수정되었습니다", HttpStatus.OK);
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<String> deleteUser( @RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
+    public ResponseEntity<String> deleteUser(@RequestBody DeleteRequestDto requestDto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute("SESSION_KEY");
-        userService.deleteUser(requestDto,userId);
+        userService.deleteUser(requestDto, userId);
         session.invalidate();
-        return new ResponseEntity<>("탈퇴완료하였습니다",HttpStatus.OK);
+        return new ResponseEntity<>("탈퇴완료하였습니다", HttpStatus.OK);
     }
 
     @PostMapping("/login")
