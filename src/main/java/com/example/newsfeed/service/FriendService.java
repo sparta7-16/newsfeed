@@ -119,5 +119,22 @@ public class FriendService {
         friendRepository.delete(friend);
         return new FriendResponseDto("삭제 완료되었습니다.");
     }
+    // 특정 사용자가 삭제되었을 때 친구 관계를 false로 설정
+    public void handleUserDeletion(Long userId) {
+        // 사용자가 받은 친구 요청 중 수락된 상태인 경우 처리
+        List<Friend> friendsAsToUser = friendRepository.findByToUser_UserIdAndAreWeFriend(userId, true);
+        // 사용자가 보낸 친구 요청 중 수락된 상태인 경우 처리
+        List<Friend> friendsAsFromUser = friendRepository.findByFromUser_UserIdAndAreWeFriend(userId, true);
+
+        // 상태를 false로 변경
+        friendsAsToUser.forEach(friend -> friend.setAreWeFriend(false));
+        friendsAsFromUser.forEach(friend -> friend.setAreWeFriend(false));
+
+        // 변경 사항 저장
+        friendRepository.saveAll(friendsAsToUser);
+        friendRepository.saveAll(friendsAsFromUser);
+    }
+
+
 
 }

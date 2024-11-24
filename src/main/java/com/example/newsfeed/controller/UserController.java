@@ -2,6 +2,7 @@ package com.example.newsfeed.controller;
 
 import com.example.newsfeed.dto.user.*;
 import com.example.newsfeed.entity.User;
+import com.example.newsfeed.service.FriendService;
 import com.example.newsfeed.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final FriendService friendService;
 
     @PostMapping("/signup")
     public ResponseEntity<SignupUserResponseDto> signup(@Validated @RequestBody SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult, HttpServletRequest request) {
@@ -67,6 +69,7 @@ public class UserController {
         Long userId = (Long) session.getAttribute("SESSION_KEY");
         userService.deleteUser(requestDto, userId);
         session.invalidate();
+        friendService.handleUserDeletion(userId);
         return new ResponseEntity<>("탈퇴완료하였습니다", HttpStatus.OK);
     }
 
@@ -95,6 +98,7 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
+
 
         return new ResponseEntity<>("로그아웃 되었습니다.", HttpStatus.OK);
     }
