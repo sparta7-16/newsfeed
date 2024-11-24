@@ -21,6 +21,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FriendService friendService;
 
     public SignupUserResponseDto signup(SignupUserRequestDto signupUserRequestDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -101,10 +102,10 @@ public class UserService {
         User user = userRepository.findByIdOrElseThrow(userId);
         if (user.getUserStatus().equals("N") || !passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 비밀번호 입니다");
-
         }
 
         user.setUserStatus("N");
+        friendService.handleUserDeletion(userId);
         user.setLeaveDate(LocalDateTime.now());
         userRepository.save(user);
     }
