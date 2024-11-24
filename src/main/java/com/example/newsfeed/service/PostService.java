@@ -87,7 +87,9 @@ public class PostService {
     public void deletePost(Long postId, HttpServletRequest request) {
         User user = findusers(request);
         Post post = findPostById(postId);
-        if (user.getUserStatus().equals("N") || !(user.getUserId().equals(post.getUser().getUserId()))) {
+        if (user.getUserStatus().equals("N")) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "이미 삭제된 게시물입니다.");
+        } else if (!(user.getUserId().equals(post.getUser().getUserId()))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 게시물만 삭제할 수 있습니다.");
         }
         postRepository.deleteById(postId);
