@@ -49,14 +49,14 @@ public class UserController {
         return new ResponseEntity<>(userById, HttpStatus.OK);
     }
 
-    @PatchMapping("/usernames")
+    @PatchMapping("/username")
     public ResponseEntity<String> updateUser(@Validated @RequestBody UpdateUserRequestDto requestDto, BindingResult bindingResult, HttpServletRequest request) {
 
         userService.updateUser(requestDto, bindingResult, request);
         return new ResponseEntity<>("수정되었습니다", HttpStatus.OK);
     }
 
-    @PatchMapping("/passwords")
+    @PatchMapping("/password")
     public ResponseEntity<String> updateUserPassword(@Validated @RequestBody UpdateUserPasswordRequestDto requestDto, BindingResult bindingResult, HttpServletRequest request) {
 
         userService.updateUserPassword(requestDto, bindingResult, request);
