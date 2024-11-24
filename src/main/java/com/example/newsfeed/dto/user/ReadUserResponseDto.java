@@ -3,7 +3,6 @@ package com.example.newsfeed.dto.user;
 import com.example.newsfeed.entity.User;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,6 +22,7 @@ public class ReadUserResponseDto {
         this.updated_date = updated_date;
 
     }
+
     public ReadUserResponseDto(User user) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
