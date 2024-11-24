@@ -5,7 +5,6 @@ import com.example.newsfeed.dto.friend.FriendResponseDto;
 import com.example.newsfeed.service.FriendService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
