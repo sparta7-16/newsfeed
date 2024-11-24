@@ -1,8 +1,6 @@
 package com.example.newsfeed.controller;
 
-import com.example.newsfeed.dto.post.PostRequestDto;
-import com.example.newsfeed.dto.post.PostResponseDto;
-import com.example.newsfeed.dto.post.PostUpdateRequestDto;
+import com.example.newsfeed.dto.post.*;
 import com.example.newsfeed.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, HttpServletRequest request) {
+    public ResponseEntity<PostCreatedDateResponseDto> createPost(@RequestBody PostRequestDto postRequestDto, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(postRequestDto, request));
     }
 
@@ -38,7 +36,7 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto updateRequestDto, @PathVariable Long postId, HttpServletRequest request) {
+    public ResponseEntity<PostUpdateResponseDto> updatePost(@RequestBody PostUpdateRequestDto updateRequestDto, @PathVariable Long postId, HttpServletRequest request) {
         return ResponseEntity.ok().body(postService.updatePost(postId, updateRequestDto, request));
     }
 
