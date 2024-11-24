@@ -12,13 +12,13 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
@@ -43,7 +43,8 @@ public class PostService {
     @Transactional
     public List<PostResponseDto> getPostList(Pageable pageable) {
         int page = pageable.getPageNumber() - 1;
-        List<Post> postsPages = postRepository.findAllByOrderByCreatedDateDesc(PageRequest.of(page, 10));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
+        List<Post> postsPages = postRepository.findPostByUser_UserStatus(pageRequest, "Y");
         return postsPages.stream().map(PostResponseDto :: toDto).toList();
 
     }

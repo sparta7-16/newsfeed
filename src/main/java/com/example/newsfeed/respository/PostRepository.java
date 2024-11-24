@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findAllByOrderByCreatedDateDesc(Pageable pageable);
+    List<Post> findPostByUser_UserStatus(Pageable pageable, String status);
 
-    Long findUserIdByPostId(Long postId);
 }
