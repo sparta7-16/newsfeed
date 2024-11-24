@@ -33,8 +33,8 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> findPostByPostId(@PathVariable Long postId, HttpServletRequest request) {
-        return ResponseEntity.ok().body(postService.findPostByPostId(postId, request));
+    public ResponseEntity<PostResponseDto> findPostByPostId(@PathVariable Long postId) {
+        return ResponseEntity.ok().body(postService.findPostByPostId(postId));
     }
 
     @PatchMapping("/{postId}")

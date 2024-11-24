@@ -52,7 +52,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto findPostByPostId(Long postId, HttpServletRequest request) {
+    public PostResponseDto findPostByPostId(Long postId) {
         Post post = findPostById(postId);
         if (post.getUser().getUserStatus().equals("N")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "게시물을 찾을 수 없습니다");
