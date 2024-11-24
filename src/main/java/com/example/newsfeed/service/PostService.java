@@ -1,8 +1,6 @@
 package com.example.newsfeed.service;
 
-import com.example.newsfeed.dto.post.PostRequestDto;
-import com.example.newsfeed.dto.post.PostResponseDto;
-import com.example.newsfeed.dto.post.PostUpdateRequestDto;
+import com.example.newsfeed.dto.post.*;
 import com.example.newsfeed.entity.Post;
 import com.example.newsfeed.entity.User;
 import com.example.newsfeed.respository.PostRepository;
@@ -30,7 +28,7 @@ public class PostService {
 
 
     @Transactional
-    public PostResponseDto createPost(PostRequestDto postRequestDto, HttpServletRequest request) {
+    public PostCreatedDateResponseDto createPost(PostRequestDto postRequestDto, HttpServletRequest request) {
         User user = findusers(request);
         if (postRequestDto.getTitle() == null || postRequestDto.getContent() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "게시물의 작성을 완료해주세요");
@@ -39,7 +37,7 @@ public class PostService {
         }
         Post post = new Post(postRequestDto.getContent(), postRequestDto.getContent(), user);
         Post savePost = postRepository.save(post);
-        return PostResponseDto.toDto(savePost);
+        return PostCreatedDateResponseDto.createPostToDto(savePost);
     }
 
     @Transactional
@@ -55,7 +53,7 @@ public class PostService {
     public PostResponseDto findPostByPostId(Long postId) {
         Post post = findPostById(postId);
         if (post.getUser().getUserStatus().equals("N")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "게시물을 찾을 수 없습니다");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다");
         }
         return PostResponseDto.toDto(findPostById(postId));
     }
@@ -66,21 +64,23 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto updateRequestDto, HttpServletRequest request) {
+    public PostUpdateResponseDto updatePost(Long postId, PostUpdateRequestDto updateRequestDto, HttpServletRequest request) {
         User user = findusers(request);
-        Post post = findPostById(postId);
-        if (user.getUserStatus().equals("N") || !(user.getUserId().equals(post.getUser().getUserId()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시물만 수정할 수 있습니다.");
+        Post findPost = findPostById(postId);
+        if (user.getUserStatus().equals("N") || !(user.getUserId().equals(findPost.getUser().getUserId()))) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 게시물만 수정할 수 있습니다.");
         }
 
         if (updateRequestDto.getTitle() != null && updateRequestDto.getContent() != null) {
-            post.update(updateRequestDto.getTitle(), updateRequestDto.getContent());
+            findPost.update(updateRequestDto.getTitle(), updateRequestDto.getContent());
         } else if (updateRequestDto.getTitle() != null) {
-            post.updateTitle(updateRequestDto.getTitle());
+            findPost.updateTitle(updateRequestDto.getTitle());
         } else if (updateRequestDto.getContent() != null) {
-            post.updateContent(updateRequestDto.getContent());
+            findPost.updateContent(updateRequestDto.getContent());
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 요청입니다.");
         }
-        return PostResponseDto.toDto(post);
+        return PostUpdateResponseDto.toUpdateDto(findPostById(postId));
     }
 
     @Transactional
@@ -88,7 +88,7 @@ public class PostService {
         User user = findusers(request);
         Post post = findPostById(postId);
         if (user.getUserStatus().equals("N") || !(user.getUserId().equals(post.getUser().getUserId()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인의 게시물만 삭제할 수 있습니다.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 게시물만 삭제할 수 있습니다.");
         }
         postRepository.deleteById(postId);
     }
